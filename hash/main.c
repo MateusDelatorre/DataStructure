@@ -44,7 +44,7 @@ void testeTreeHashTable(Municipio * cidades){
     // Municipio * teste = getData(tree_hash_table->hash_table, cidades[0].store_key);
     // printf("%s\n", teste->nome);
     for (int i = 0; i < MAX; i++){
-        cidades[i].store_key = simpleMod(cidades[i].codigo_municipio, 100);
+        cidades[i].store_key = simpleMod(cidades[i].codigo_municipio, 500);
     }
     // cidades[0].store_key = 100;
     // addMunicipio(tree_hash_table, &cidades[0]);

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "generic.h"
+#include "city.h"
 
 //struct that represent a treeNode
 struct branch {
@@ -78,6 +79,8 @@ struct branch* addSort(struct branch * tree_branch, GenericData ** new_data, int
 		}else if ((*compare)(tree_branch->data->data, (*new_data)->data) < 0){
 			tree_branch->right_branch = addSort(tree_branch->right_branch, new_data, compare);
 		}else{
+			// printf("%s\n", ((Municipio *)tree_branch->data->data)->nome);
+			// printf("%s\n", ((Municipio *)(*new_data)->data)->nome);
 			printf("duplicated\n");
 		}
 	}
