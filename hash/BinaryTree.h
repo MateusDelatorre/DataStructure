@@ -3,11 +3,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "generic.h"
 
 //struct that represent a treeNode
 struct branch {
-
-	//int index;//This variable is for debugging purpose. I'll leave it here to facilitate your debugging as well
+	GenericData * data;
 	struct branch * right_branch;//The right branch will be the direction when the user says no
 	struct branch * left_branch;//The left branch will be direction when the user says yes
 };
@@ -44,12 +44,15 @@ int isFull(TreeRoot * list) {
 }
 
 //Create a new tree
-void newTree (TreeRoot * tree_root) {
-    tree_root->first = NULL;
-	tree_root->size = 0;
+TreeRoot * newTree () {
+	TreeRoot * new_root;
+	new_root = (TreeRoot *) malloc(sizeof(TreeRoot));
+	new_root->first = NULL;
+	new_root->size = 0;
+	return new_root;
 }
 
-struct branch* newBranch(){
+struct branch* newBranch(size_t size){
 	struct branch * new_branch;
 	new_branch = (struct branch*) malloc(sizeof(struct branch));
 	new_branch->left_branch = NULL;
@@ -57,26 +60,50 @@ struct branch* newBranch(){
 	return new_branch;
 }
 
-// struct branch* addSort(struct branch * tree_branch, Student * student){
-// 	if(tree_branch == NULL){
-// 		struct branch * new_branch;
-// 		new_branch = (struct branch*) malloc(sizeof(struct branch));
-// 		new_branch->student = student;
-// 		new_branch->left_branch = NULL;
-// 		new_branch->right_branch = NULL;
-// 		return new_branch;
-// 	}else{
-// 		if (tree_branch->student->enroll > student->enroll)
-// 		{
-// 			tree_branch->left_branch = addSort(tree_branch->left_branch, student);
-// 		}else if (tree_branch->student->enroll < student->enroll)
-// 		{
-// 			tree_branch->right_branch = addSort(tree_branch->right_branch, student);
-// 		}else{
-// 			printf("duplicated\n");
-// 		}
-// 	}
-// }
+struct branch* addSort(struct branch * tree_branch, GenericData ** new_data, int (*compare)(void *, void *)){
+	if(tree_branch == NULL){
+		//printf("BinaryTree.h:65\n");
+		struct branch * new_branch;
+		new_branch = (struct branch*) malloc(sizeof(struct branch));
+		new_branch->data = newGenericData((*new_data)->size);
+		new_branch->data = *new_data;
+		new_branch->left_branch = NULL;
+		new_branch->right_branch = NULL;
+		return new_branch;
+	}else{
+		//printf("BinaryTree.h:74\n");
+		//printf("compare: %d\n", (*compare)(tree_branch->data->data, (*new_data)->data));
+		if ((*compare)(tree_branch->data->data, (*new_data)->data) > 0){
+			tree_branch->left_branch = addSort(tree_branch->left_branch, new_data, compare);
+		}else if ((*compare)(tree_branch->data->data, (*new_data)->data) < 0){
+			tree_branch->right_branch = addSort(tree_branch->right_branch, new_data, compare);
+		}else{
+			printf("duplicated\n");
+		}
+	}
+}
+
+void addToTreeSort(TreeRoot ** tree_root, GenericData ** new_data, int (*compare)(void *, void *)){
+	if((*tree_root)->first == NULL){
+		struct branch * new_branch;
+		new_branch = (struct branch*) malloc(sizeof(struct branch));
+		new_branch->data = newGenericData((*new_data)->size);
+		new_branch->data = *new_data;
+		new_branch->left_branch = NULL;
+		new_branch->right_branch = NULL;
+		(*tree_root)->first = new_branch;
+	}else{
+		printf("compare: %d\n", (*compare)((*tree_root)->first->data->data, (*new_data)->data));
+		if ((*compare)((*tree_root)->first->data->data, (*new_data)->data) > 0){
+			(*tree_root)->first->left_branch = addSort((*tree_root)->first->left_branch, new_data, compare);
+		}else if ((*compare)((*tree_root)->first->data->data, (*new_data)->data) < 0){
+			(*tree_root)->first->right_branch = addSort((*tree_root)->first->right_branch, new_data, compare);
+		}else{
+			printf("duplicated\n");
+		}
+	}
+	return;
+}
 
 // struct branch* addSortBranchs(struct branch * tree_branch, struct branch * new_branch){
 // 	if(tree_branch == NULL){
@@ -119,22 +146,22 @@ void goThroughTree(TreeBranch * tree_branch, void (*f)(TreeBranch * tree_branch)
 	}
 }
 
-// struct branch* find(TreeBranch * tree_branch, int enroll){
-// 	if(tree_branch == NULL){
-// 		printf("Can't find this student\n");
-// 		return NULL;
-// 	}else{
-// 		if (tree_branch->student->enroll > enroll)
-// 		{
-// 			find(tree_branch->left_branch, enroll);
-// 		}else if (tree_branch->student->enroll < enroll)
-// 		{
-// 			find(tree_branch->right_branch, enroll);
-// 		}else{
-// 			return tree_branch;
-// 		}
-// 	}
-// }
+struct branch* find(TreeBranch * tree_branch, void * query, int (*compare)(void *, void *)){
+	if(tree_branch == NULL){
+		printf("Can't find your data\n");
+		return NULL;
+	}else{
+		if ((*compare)(tree_branch->data->data, query) > 0)
+		{
+			find(tree_branch->left_branch, query, compare);
+		}else if ((*compare)(tree_branch->data->data, query) < 0)
+		{
+			find(tree_branch->right_branch, query, compare);
+		}else{
+			return tree_branch;
+		}
+	}
+}
 
 // int deleteBranch(TreeRoot * root, int enroll){
 // 	TreeBranch * tree_branch = find(root->first, enroll);

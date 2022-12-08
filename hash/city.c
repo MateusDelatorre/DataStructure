@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "city.h"
+#include <string.h>
 
 void readDataBase(Municipio cidades[5439]){
     int codigo_estado, codigo_municipio, populacao;
@@ -75,4 +76,18 @@ int checkDuplicate(Municipio cidades[5439]){
         }
     }
     return 1;
+}
+
+int compare(void * municipio1, void * municipio2){
+    Municipio * cidade1 = (Municipio *) municipio1;
+    Municipio * cidade2 = (Municipio *) municipio2;
+    return strcmp(cidade1->nome, cidade2->nome);
+}
+
+int compareString(void * municipio1, void * query){
+    Municipio * cidade1 = (Municipio *) municipio1;
+    //printf("cidade: %s\n", cidade1->nome);
+    int teste = strcmp(cidade1->nome, (char * )query);
+    //printf("teste: %d\n", teste);
+    return teste;
 }
